@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JDBC2JSON SYSTEM "jdbc2json.dtd" >
+<JDBC2JSON>   
+	<DRIVERSTRING>jdbc:hsqldb:mem:testcase;shutdown=true;user=sa</DRIVERSTRING>
+	<TEMPLATE name="htmlFragment" contentType="text/html">
+		<![CDATA[<b>Hello, World!</b>]]>
+	</TEMPLATE>
+	<QUERY name="allGreetings">
+		SELECT * FROM greeting
+	</QUERY>
+	<QUERY name="greetingById">
+		SELECT * FROM greeting WHERE ID = :id
+	</QUERY>
+	<QUERY name="addGreeting">
+		{ call newGreeting( :message ) }
+	</QUERY>
+        
+</JDBC2JSON>
