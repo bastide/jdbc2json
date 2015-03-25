@@ -23,7 +23,7 @@ class IndexMap extends HashMap<String, List<Integer>> {
  *
  * @author adam_crume
  */
-public class NamedParameterStatement {
+class NamedParameterStatement {
 
 	/**
 	 * The statement this object is wrapping.

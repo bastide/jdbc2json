@@ -8,7 +8,7 @@ import java.text.StringCharacterIterator;
  *
  * @author bastide
  */
-public class ResultSetRecord {
+class ResultSetRecord {
 
 	final ResultSetColumn[] columns;
 	final ResultSetColumnMetaData[] metaData;
