@@ -2,8 +2,6 @@ package com.github.bastide.jdbc2json;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,17 +50,18 @@ public abstract class QueryProcessorServlet extends HttpServlet {
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
 		Connection connection = null;
-		NamedParameterStatement statement = null;
+		QueryStatement statement = null;
 		IterableResultSet rs = null;
+		//response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 		try {
 			// Report config errors (detected at init()) to the client
 			if (null != config.getConfigError()) {
 				throw new Exception(config.getConfigError());
 			}
 			connection = getConnection(request);
-			String query = findNamedParameterQuery(request);
+			String query = findSQLQuery(request);
 			statement = createStatement(connection, query);
-			statement.setParametersFromRequest(request.getParameterMap());
+			statement.setParametersFromRequest(request);
 
 			rs = statement.getResultSet();
 			String templateName = request.getParameter(TEMPLATE_PARAMETER);
@@ -72,10 +71,10 @@ public abstract class QueryProcessorServlet extends HttpServlet {
 			} catch (NullPointerException e) {
 				throw new Exception(String.format("Template %s unknown", templateName));
 			}
-			response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 			templateProcessor.processTemplate(templateName, rs, response.getWriter());
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
+			response.setContentType("text/plain; charset=utf-8");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println(e.getMessage());
 			//response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
@@ -101,7 +100,7 @@ public abstract class QueryProcessorServlet extends HttpServlet {
 		}
 	}
 
-	protected NamedParameterStatement createStatement(Connection connection, String query) throws SQLException {
+	protected QueryStatement createStatement(Connection connection, String query) throws SQLException {
 		return new NamedParameterStatement(connection, query);
 	}
 
@@ -125,16 +124,22 @@ public abstract class QueryProcessorServlet extends HttpServlet {
 		throw new Exception(NO_DRIVER_STRING_OR_DATA_SOURCE_CONFIGURED);
 	}
 
-	protected String findNamedParameterQuery(HttpServletRequest request) throws Exception {
+	protected String findSQLQuery(HttpServletRequest request) throws Exception {
 		String queryName = request.getPathInfo();
-		if (queryName == null) {
-			throw new Exception("No query name found in pathInfo");
+		// Maybe we are included in a JSP
+		if (queryName==null) {
+		    Object includePathInfo = request.getAttribute("javax.servlet.include.path_info");
+		    if (includePathInfo != null)
+			queryName = includePathInfo.toString();
+		}
+		if (queryName == null || "/".equals(queryName) ) {
+			throw new Exception("No query name found in URI: " + request.getRequestURI());
 		} else {
 			// remove leading /
 			queryName = queryName.substring(1, queryName.length());
 			String query = config.getQueries().get(queryName);
 			if (query == null) {
-				throw new Exception("Query " + queryName + " not found in configuration");
+				throw new Exception("SQL Query '" + queryName + "' not found in configuration");
 			}
 			return query;
 		}
@@ -166,7 +171,7 @@ public abstract class QueryProcessorServlet extends HttpServlet {
 					dataSource = (DataSource) envCtx.lookup(datasourceJNDIName);
 					logger.log(Level.INFO, "Servlet {0}  is using datasource {1} ", new Object[]{servletName, datasourceJNDIName});
 				}
-				logger.log(Level.INFO, "Servlet {0} found {1} queries in init parameters", new Object[]{servletName, config.getQueries().size()});
+				logger.log(Level.INFO, "Servlet {0} found {1} queries in {2}", new Object[]{servletName, config.getQueries().size(), configFile});
 
 				// init template templateProcessor
 				templateProcessor = getResultSetProcessor();

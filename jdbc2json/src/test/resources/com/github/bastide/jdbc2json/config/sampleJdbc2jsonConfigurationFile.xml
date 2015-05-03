@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JDBC2JSON SYSTEM "jdbc2json.dtd" >
+<JDBC2JSON>   
+	<DATASOURCE>jdbc/Hello</DATASOURCE>
+	<TEMPLATE name="htmlFragment" contentType="text/html">
+		<![CDATA[<b>Hello, World!</b>]]>
+	</TEMPLATE>
+	<QUERY name="hello">
+		SELECT * FROM CUSTOMER
+	</QUERY>
+</JDBC2JSON>

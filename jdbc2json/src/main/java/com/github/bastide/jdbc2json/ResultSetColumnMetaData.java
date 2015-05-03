@@ -8,7 +8,7 @@ import java.sql.SQLException;
  *
  * @author bastide
  */
-class ResultSetColumnMetaData {
+public class ResultSetColumnMetaData {
 
 	final int type;
 	final int displaySize;

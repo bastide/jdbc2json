@@ -1,6 +1,5 @@
 package com.github.bastide.jdbc2json.config;
 
-import com.github.bastide.jdbc2json.config.Jdbc2jsonParser;
 import java.io.InputStream;
 import com.github.bastide.jdbc2json.Jdbc2JsonConfig;
 import org.junit.After;

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 class IndexMap extends HashMap<String, List<Integer>> {
 };
@@ -23,7 +24,7 @@ class IndexMap extends HashMap<String, List<Integer>> {
  *
  * @author adam_crume
  */
-class NamedParameterStatement {
+public class NamedParameterStatement implements QueryStatement {
 
 	/**
 	 * The statement this object is wrapping.
@@ -128,14 +129,15 @@ class NamedParameterStatement {
 	 * @see http://docs.oracle.com/javase/1.5.0/docs/guide/jdbc/getstart/mapping.html
 	 *
 	 */
-	public void setParametersFromRequest(Map<String, String[]> parameters) throws SQLException, Exception {
+    @Override
+	public void setParametersFromRequest(HttpServletRequest request) throws SQLException, Exception {
 		ParameterMetaData queryMetaData = statement.getParameterMetaData();
                 // TODO : is it a good idea to null everything ?
                 for(int index = 1; index <= queryMetaData.getParameterCount(); index++)
                     if (queryMetaData.isNullable(index) == ParameterMetaData.parameterNullable)
                         statement.setNull(index, queryMetaData.getParameterType(index));
                         
-                            
+                Map<String, String[]> parameters = request.getParameterMap();
 		for (String parameterName : parameters.keySet()) {
 			List<Integer> indices = getIndexes(parameterName);
 			String[] values = parameters.get(parameterName);
@@ -217,7 +219,8 @@ class NamedParameterStatement {
 
 	}
 
-	protected IterableResultSet getResultSet() throws SQLException {
+    @Override
+	public IterableResultSet getResultSet() throws SQLException {
 		ResultSet rs;
 		boolean hasResultSet = statement.execute();
 		if (hasResultSet) {

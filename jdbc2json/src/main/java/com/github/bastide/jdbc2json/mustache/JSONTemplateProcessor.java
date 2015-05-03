@@ -19,20 +19,18 @@ import java.util.Set;
  */
 public class JSONTemplateProcessor implements ResultSetTemplateProcessor {
 
-	private static final String DEFAULT_INSERT_TEMPLATE = "InsertQuery";
+	private static final String INSERT_WITH_GENERATED_KEYS = "InsertQuery";
 	private static final String DEFAULT_SELECT_TEMPLATE = "VerboseResult";
-	private static final String DEFAULT_UPDATE_TEMPLATE = "UpdateQuery";
+	private static final String UPDATE_WITH_NO_GENERATED_KEYS = "UpdateQuery";
 	private final Map<String, MustacheResultSetTemplate> templates = new HashMap<>();
 
 	@Override
 	public void init() {
-		templates.put(
-			DEFAULT_INSERT_TEMPLATE,
+		templates.put(INSERT_WITH_GENERATED_KEYS,
 			new MustacheResultSetTemplate(
 			"{\t\"updateCount\" : {{updateCount}},\n\t\"metaData\" :{{>MetaData}},\n\t\"insertedKeys\":{{>AllRecordsAsArray}}\n}",
 			QueryProcessorServlet.JSON_CONTENT_TYPE));
-		templates.put(
-			DEFAULT_UPDATE_TEMPLATE,
+		templates.put(UPDATE_WITH_NO_GENERATED_KEYS,
 			new MustacheResultSetTemplate(
 			"{ \"updateCount\" : {{updateCount}} }",
 			QueryProcessorServlet.JSON_CONTENT_TYPE));
@@ -57,7 +55,7 @@ public class JSONTemplateProcessor implements ResultSetTemplateProcessor {
 		templates.put(
 			"RecordAsArray",
 			new MustacheResultSetTemplate(
-			"\t{ \"columns\" : [{{#columns}}{{^-first}}, {{/-first}} {{this.value}} {{/columns}}]}",
+			"\t[{{#columns}}{{^-first}}, {{/-first}} {{this.value}} {{/columns}}]",
 			QueryProcessorServlet.JSON_CONTENT_TYPE));
 		templates.put(
 			"AllRecordsAsArray",
@@ -125,8 +123,8 @@ public class JSONTemplateProcessor implements ResultSetTemplateProcessor {
 	protected MustacheResultSetTemplate chooseTemplate(String templateName, IterableResultSet rs) {
 		if (templateName == null) {
 			templateName = DEFAULT_SELECT_TEMPLATE; // by default
-			if (rs.getUpdateCount() != -1) { // it is an INSERT or a UPDATE, choose an appropriate template				
-				templateName = rs.getRecords().hasNext() ? DEFAULT_INSERT_TEMPLATE : DEFAULT_UPDATE_TEMPLATE;
+			if (rs.getUpdateCount() != -1) { // it is an INSERT, DELETE or a UPDATE, choose an appropriate template				
+				templateName = rs.getRecords().hasNext() ? INSERT_WITH_GENERATED_KEYS : UPDATE_WITH_NO_GENERATED_KEYS;
 			}
 		}
 		return templates.get(templateName);

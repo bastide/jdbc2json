@@ -7,7 +7,7 @@ import java.sql.SQLException;
  *
  * @author bastide
  */
-class ResultSetColumn {
+public class ResultSetColumn {
 
 	final ResultSetColumnMetaData metaData;
 	final Object value;

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.github.bastide.jdbc2json.hsqldb;
 
 import java.io.File;
@@ -43,19 +38,20 @@ public class HsqlDBTest {
 
     @Before
     public void setUp() throws SQLException, IOException, SqlToolError {
-        connection = DriverManager.getConnection("jdbc:hsqldb:mem:testcase;shutdown=true", "SA", null);
-        String sqlFilePath = getClass().getResource("/fillTestDatabase.sql").getFile();
-        SqlFile sqlFile = new SqlFile(new File(sqlFilePath));
+	    connection = DriverManager.getConnection("jdbc:hsqldb:mem:testcase;shutdown=true", "SA", null);
+	    String sqlFilePath = getClass().getResource("/i18nDatabase.sql").getFile();
+	    SqlFile sqlFile = new SqlFile(new File(sqlFilePath));
 
-        sqlFile.setConnection(connection);
-        sqlFile.execute();
-        sqlFile.closeReader(); 
-	
-	Statement stmt = connection.createStatement();
-        for (String sql : initStatements)
-            stmt.execute(sql);
-        
-	connection.commit();
+	    sqlFile.setConnection(connection);
+	    sqlFile.execute();
+	    sqlFile.closeReader();
+
+	    Statement stmt = connection.createStatement();
+	    for (String sql : initStatements) {
+		    stmt.execute(sql);
+	    }
+
+	    connection.commit();
     }
 
     @After

@@ -10,7 +10,7 @@ import com.github.bastide.jdbc2json.mustache.JSONTemplateProcessor;
 @WebServlet(
         name = "jdbc2json",
         description = "Sends JDBC resultSet as JSON",
-        urlPatterns = "/jdbc2json"
+        urlPatterns = "/jdbc2json/*"
 )
 public class Jdbc2JsonServlet extends QueryProcessorServlet {
 

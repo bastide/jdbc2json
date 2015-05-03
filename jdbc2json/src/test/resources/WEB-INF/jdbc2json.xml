@@ -2,9 +2,6 @@
 <!DOCTYPE JDBC2JSON SYSTEM "jdbc2json.dtd" >
 <JDBC2JSON>   
 	<DRIVERSTRING>jdbc:hsqldb:mem:testcase;shutdown=true;user=sa</DRIVERSTRING>
-	<TEMPLATE name="htmlFragment" contentType="text/html">
-		<![CDATA[<b>Hello, World!</b>]]>
-	</TEMPLATE>
 	<QUERY name="allGreetings">
 		SELECT * FROM greeting
 	</QUERY>
@@ -12,7 +9,10 @@
 		SELECT * FROM greeting WHERE ID = :id
 	</QUERY>
 	<QUERY name="addGreeting">
-		{ call newGreeting( :message ) }
+		INSERT INTO greeting(message) VALUES (:message)
+	</QUERY>
+	<QUERY name="addSample">
+		INSERT INTO sample(id, label) VALUES (:id, :label)
 	</QUERY>
         
 </JDBC2JSON>
