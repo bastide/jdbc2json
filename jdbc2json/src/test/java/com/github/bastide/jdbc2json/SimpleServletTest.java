@@ -123,10 +123,9 @@ public class SimpleServletTest {
 		String jsonResponse = getJSONResponse("/jdbc2json/addSample?id=1&label=hello&template=InsertQuery");
 		System.err.println("testInsertStatementWithNoGeneratedKey returns : " + jsonResponse);
 		JSONObject parsedResponse = new JSONObject(jsonResponse);
-		// We have 1 record inserted
-		assertEquals(1, parsedResponse.getInt("updateCount"));
+		assertEquals("1 record should have been inserted", 1, parsedResponse.getInt("updateCount"));
 		// No newly generated key
-		assertEquals(0, parsedResponse.getJSONArray("insertedKeys").length());
+		assertEquals("No new key should have been generated", 0, parsedResponse.getJSONArray("insertedKeys").length());
 	}
 
 	@Test

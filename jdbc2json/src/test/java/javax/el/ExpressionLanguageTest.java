@@ -6,13 +6,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import javax.el.*;
 
 /**
  *
  * @author rbastide
  */
 public class ExpressionLanguageTest {
+        ELProcessor elp;
+
 
     public ExpressionLanguageTest() {
     }
@@ -27,6 +28,7 @@ public class ExpressionLanguageTest {
 
     @Before
     public void setUp() {
+	elp = new ELProcessor();
     }
 
     @After
@@ -34,6 +36,10 @@ public class ExpressionLanguageTest {
     }
 
     @Test
-    public void hello() {}
+    public void hello() {
+	Object result = elp.eval("4+5");
+	assertEquals(9L, result);
+    
+    }
 
 }
